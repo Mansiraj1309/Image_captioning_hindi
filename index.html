@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozy Image Captioning in Hindi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Poppins:wght@400&family=Noto+Sans+Devanagari:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+    <h1>अनसुनी कहानियाँ, आँखों से साझा करें</h1>
+</header>
+
+<!-- Form for uploading image -->
+<div class="form-container" id="upload-form">
+    <h2>अपना चित्र अपलोड करें</h2>
+    <input type="file" id="image-upload" class="input-field" accept="image/*" onchange="previewImage(event)">
+    <button class="upload-btn" onclick="uploadImage()">कैप्शन प्राप्त करें</button>
+    <div id="image-preview-container">
+        <img id="image-preview" class="image-preview" src="" alt="Image Preview" style="display:none;">
+    </div>
+</div>
+
+<!-- Result Section -->
+<div class="result-container" id="result-container" style="display:none;">
+    <h2>आपका चित्र और कैप्शन:</h2>
+    <img id="result-image" class="image-preview" src="" alt="Uploaded Image">
+    <p id="result-caption"></p>
+    <button class="back-btn" onclick="resetForm()">एक और चित्र अपलोड करें</button>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

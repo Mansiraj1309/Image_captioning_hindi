@@ -1,0 +1,10 @@
+
+torch
+torchvision
+numpy
+pandas
+nltk
+matplotlib
+pillow
+tokenizers
+tqdm
