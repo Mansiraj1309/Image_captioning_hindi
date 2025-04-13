@@ -3,6 +3,17 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#others
+__pycache__/
+*.pyc
+*.pth
+*.pkl
+Uploads/
+.venv/
+.env
+*.zip
+.DS_Store
+
 # C extensions
 *.so
 
