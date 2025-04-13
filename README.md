@@ -21,12 +21,14 @@ Follow these steps to set up and run the project locally:
    ```bash
    git clone https://github.com/Mansiraj1309/Image_captioning_hindi.git
    cd Image_captioning_hindi
-2.```bash
-  conda create -n image-captioning python=3.12
-  conda activate image-captioning
-3.pip install -r requirements.txt
+2.Run
+-conda create -n image-captioning python=3.12
+-conda activate image-captioning
+3.Run
+-pip install -r requirements.txt
 4.Download model files mentioned above
-5.Run the application using python app.py
+5.Run the application using 
+-python app.py
 
 ##Usage
 Web Interface:
