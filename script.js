@@ -1,14 +1,15 @@
-function previewImage(event) {
-    const imagePreview = document.getElementById("image-preview");
-    const file = event.target.files[0];
-    
-    if (file) {
+function previewImage() {
+    const imageInput = document.getElementById("image-upload");
+    const previewImage = document.getElementById("preview-image");
+    const previewContainer = document.getElementById("image-preview");
+
+    if (imageInput.files && imageInput.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            imagePreview.src = e.target.result;
-            imagePreview.style.display = 'block';
+            previewImage.src = e.target.result;
+            previewContainer.style.display = 'block';
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(imageInput.files[0]);
     }
 }
 
@@ -36,7 +37,7 @@ function uploadImage() {
         const resultImage = document.getElementById("result-image");
         const resultCaption = document.getElementById("result-caption");
 
-        resultImage.src = URL.createObjectURL(imageInput.files[0]);
+        resultImage.src = data.image_path;
         resultCaption.textContent = data.caption;
         resultContainer.style.display = 'block';
         document.getElementById("upload-form").style.display = 'none';
