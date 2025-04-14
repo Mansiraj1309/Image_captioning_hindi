@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, send_from_directory
 import os
 from PIL import Image
 import torch
@@ -10,41 +10,36 @@ from tokenizers.models import BPE
 from tokenizers.pre_tokenizers import Whitespace
 from tokenizers.trainers import BpeTrainer
 
-# Define TextVocabulary
+# TextVocabulary class (unchanged)
 class TextVocabulary:
-    def __init__(self):
-        self.itos = {0: "<PAD>", 1: "<start>", 2: "<end>", 3: "<UNK>"}
-        self.stoi = {v: k for k, v in self.itos.items()}
-        self.min_freq = 1
-        self.tokenizer = Tokenizer(BPE(unk_token="<UNK>"))
-        self.tokenizer.pre_tokenizer = Whitespace()
-        self.token_counter = Counter()
+    def __init__(self, freq_threshold):
+        self.itos = {0: "<PAD>", 1: "<SOS>", 2: "<EOS>", 3: "<UNK>"}
+        self.stoi = {k: j for j, k in self.itos.items()}
+        self.freq_threshold = freq_threshold
 
     def __len__(self):
         return len(self.itos)
 
-    def tokenize(self, text):
-        return self.tokenizer.encode(text).tokens
+    def build_vocabulary(self, sentence_list):
+        frequencies = Counter()
+        idx = 4
+
+        for sentence in sentence_list:
+            for word in sentence.lower().split():
+                frequencies[word] += 1
+
+                if frequencies[word] == self.freq_threshold:
+                    self.stoi[word] = idx
+                    self.itos[idx] = word
+                    idx += 1
 
     def numericalize(self, text):
-        tokens_list = self.tokenize(text)
+        tokenized_text = text.lower().split()
+
         return [
             self.stoi[token] if token in self.stoi else self.stoi["<UNK>"]
-            for token in tokens_list
+            for token in tokenized_text
         ]
-
-    def build_vocab(self, sentence_list):
-        word_count = 4
-        trainer = BpeTrainer(special_tokens=["<PAD>", "<start>", "<end>", "<UNK>"])
-        self.tokenizer.train_from_iterator(sentence_list, trainer)
-        for sentence in sentence_list:
-            tokens = self.tokenizer.encode(sentence).tokens
-            self.token_counter.update(tokens)
-        for token, count in self.token_counter.items():
-            if count >= self.min_freq and token not in self.stoi:
-                self.stoi[token] = word_count
-                self.itos[word_count] = token
-                word_count += 1
 
 app = Flask(__name__)
 
@@ -82,6 +77,10 @@ def allowed_file(filename):
 def index():
     return render_template('index.html')
 
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 @app.route('/upload', methods=['POST'])
 def upload_image():
     if 'image' not in request.files:
@@ -93,12 +92,14 @@ def upload_image():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filepath)
         try:
-            caption, _, _ = generate_caption_for_image(filepath, model, vocab, inception_transform, device)  # Pass device
+            caption, _, _ = generate_caption_for_image(filepath, model, vocab, inception_transform, device)
             caption_text = ' '.join(caption)
-            return jsonify({'caption': caption_text, 'image_path': filepath})
+            # Return the URL that the frontend can use to access the image
+            image_url = f'/uploads/{file.filename}'
+            return jsonify({'caption': caption_text, 'image_path': image_url})
         except Exception as e:
             return jsonify({'error': f'Error generating caption: {str(e)}'}), 500
     return jsonify({'error': 'Invalid file type'}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)  # Using port 5001 as per previous fix
+    app.run(debug=True, host='0.0.0.0', port=5001)
