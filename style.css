@@ -98,3 +98,11 @@ h1 {
 .back-btn:hover {
     background-color: #bf7e67;
 }
+
+/* Audio Player */
+audio {
+    margin-top: 15px;
+    width: 100%;
+    max-width: 300px;
+    border-radius: 8px;
+}
