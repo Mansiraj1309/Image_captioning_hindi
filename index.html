@@ -15,7 +15,7 @@
 <!-- Form for uploading image -->
 <div class="form-container" id="upload-form">
     <h2>अपना चित्र अपलोड करें</h2>
-    <input type="file" id="image-upload" class="input-field" accept="image/*" onchange="previewImage(event)">
+    <input type="file" id="image-upload" class="input-field" accept="image/*" onchange="previewImage()">
     <button class="upload-btn" onclick="uploadImage()">कैप्शन प्राप्त करें</button>
     <div id="image-preview-container">
         <img id="image-preview" class="image-preview" src="" alt="Image Preview" style="display:none;">
@@ -27,9 +27,14 @@
     <h2>आपका चित्र और कैप्शन:</h2>
     <img id="result-image" class="image-preview" src="" alt="Uploaded Image">
     <p id="result-caption"></p>
+    <audio id="caption-audio" controls autoplay>
+        <source id="audio-source" src="" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
     <button class="back-btn" onclick="resetForm()">एक और चित्र अपलोड करें</button>
 </div>
 
 <script src="/static/script.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'931ae1f21ca053f9',t:'MTc0NDg4MjAwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
