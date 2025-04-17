@@ -1,5 +1,5 @@
 # Image_captioning_hindi
-A Flask web app for generating Hindi captions using a deep learning model.
+A Flask web app for generating Hindi captions using a deep learning model, with audio playback for accessibility.
 ## Model Files
 Download the following files and place them in the project root:
 - [image_captioning_model.pth](https://drive.google.com/file/d/1txKnKwwB9beunMP3t1w3dQm85sDrvzoP/view?usp=sharing)
@@ -8,6 +8,7 @@ Download the following files and place them in the project root:
 - Upload images (PNG, JPG, JPEG) through a user-friendly web interface.
 - Generate Hindi captions automatically using a trained neural network.
 - Supports real-time captioning with a responsive design.
+- Generates audio narration of captions in Hindi for visually impaired users.
 
 ## Prerequisites
 - Python 3.12 or higher
@@ -36,4 +37,8 @@ Access http://127.0.0.1:5001 after running app.py.
 Click “Choose File” to select an image.
 Click “Generate Caption” to view the Hindi caption.
 Supported Formats: PNG, JPG, JPEG.
-Example Output: For an image of a family gathering, the model might output “परिवार एक साथ भोजन कर रहा है” (A family is eating together).
+Example Output: For an image of a family gathering, the model might output “परिवार एक साथ भोजन कर रहा है” (A family is eating together), with audio narration.
+
+## Accessibility:
+-The caption is automatically played as audio in Hindi to assist visually impaired users.
+-Use the audio player controls to replay or pause the narration.
