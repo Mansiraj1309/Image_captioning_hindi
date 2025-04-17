@@ -9,6 +9,7 @@ from tokenizers import Tokenizer
 from tokenizers.models import BPE
 from tokenizers.pre_tokenizers import Whitespace
 from tokenizers.trainers import BpeTrainer
+from gtts import gTTS  # Added for text-to-speech
 
 # TextVocabulary class (unchanged)
 class TextVocabulary:
@@ -94,11 +95,21 @@ def upload_image():
         try:
             caption, _, _ = generate_caption_for_image(filepath, model, vocab, inception_transform, device)
             caption_text = ' '.join(caption)
-            # Return the URL that the frontend can use to access the image
+            # Generate audio for the caption
+            audio_filename = f"caption_{os.path.splitext(file.filename)[0]}.mp3"
+            audio_filepath = os.path.join(app.config['UPLOAD_FOLDER'], audio_filename)
+            tts = gTTS(text=caption_text, lang='hi')  # 'hi' for Hindi
+            tts.save(audio_filepath)
+            # Return URLs for image and audio
             image_url = f'/uploads/{file.filename}'
-            return jsonify({'caption': caption_text, 'image_path': image_url})
+            audio_url = f'/uploads/{audio_filename}'
+            return jsonify({
+                'caption': caption_text,
+                'image_path': image_url,
+                'audio_path': audio_url
+            })
         except Exception as e:
-            return jsonify({'error': f'Error generating caption: {str(e)}'}), 500
+            return jsonify({'error': f'Error generating caption or audio: {str(e)}'}), 500
     return jsonify({'error': 'Invalid file type'}), 400
 
 if __name__ == '__main__':
