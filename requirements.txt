@@ -7,5 +7,5 @@ matplotlib
 pillow
 tokenizers
 tqdm
-flask
 gTTS
+flask

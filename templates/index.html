@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozy Image Captioning</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Poppins:wght@300;400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="background-animation"></div>
+
+    <main class="glass-container">
+        <header>
+            <h1>अनसुनी कहानियाँ, आँखों से साझा करें</h1>
+            <p class="subtitle">Upload a picture and discover its story in beautifully spoken Hindi</p>
+        </header>
+
+        <!-- Form for uploading image -->
+        <div class="card" id="upload-form">
+            <h2>अपना चित्र अपलोड करें</h2>
+            
+            <div class="drop-zone" id="drop-zone">
+                <i class="fa-solid fa-cloud-arrow-up drop-icon"></i>
+                <span class="drop-text">Drag & Drop your image here or <strong>Browse</strong></span>
+                <input type="file" id="image-upload" accept="image/*" class="hidden-input">
+            </div>
+
+            <div id="image-preview-container" style="display:none;">
+                <img id="image-preview" class="image-preview" src="" alt="Image Preview">
+                <p id="file-name" class="file-name"></p>
+                <button class="remove-btn" onclick="resetForm()"><i class="fa-solid fa-xmark"></i> Change Image</button>
+            </div>
+
+            <button class="action-btn upload-btn" id="submit-btn" onclick="uploadImage()">
+                कैप्शन प्राप्त करें <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div class="card" id="loading-container" style="display:none;">
+            <div class="loader">
+                <div class="spinner"></div>
+            </div>
+            <h2>कहानियाँ बुनी जा रही हैं...</h2>
+            <p>Our AI is observing your image. This takes a few magical seconds.</p>
+        </div>
+
+        <!-- Result Section -->
+        <div class="card result-card" id="result-container" style="display:none;">
+            <h2>आपका चित्र और कैप्शन:</h2>
+            <div class="result-content">
+                <img id="result-image" class="result-image" src="" alt="Uploaded Image">
+                <div class="caption-content">
+                    <p id="result-caption" class="caption-text"></p>
+                    <audio id="caption-audio" controls class="custom-audio">
+                        <source id="audio-source" src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+            <button class="action-btn back-btn" onclick="resetForm()">
+                <i class="fa-solid fa-arrow-rotate-left"></i> एक और चित्र अपलोड करें
+            </button>
+        </div>
+    </main>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

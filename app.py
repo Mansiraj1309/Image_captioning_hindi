@@ -11,6 +11,8 @@ from tokenizers.pre_tokenizers import Whitespace
 from tokenizers.trainers import BpeTrainer
 from gtts import gTTS  # Added for text-to-speech
 
+
+
 # TextVocabulary class (unchanged)
 class TextVocabulary:
     def __init__(self, freq_threshold):
@@ -51,7 +53,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Load model and vocabulary
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 model_path = 'image_captioning_model.pth'
 vocab_path = 'vocab.pkl'
 
@@ -113,4 +115,4 @@ def upload_image():
     return jsonify({'error': 'Invalid file type'}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5005)
