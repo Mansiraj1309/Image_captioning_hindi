@@ -1,39 +1,53 @@
-# Image_captioning_hindi
-A Flask web app for generating Hindi captions using a deep learning model.
-## Model Files
-Download the following files and place them in the project root:
-- [image_captioning_model.pth](https://drive.google.com/file/d/1txKnKwwB9beunMP3t1w3dQm85sDrvzoP/view?usp=sharing)
-- [vocab.pkl](https://drive.google.com/file/d/1XssaSKX-tbnNpIHIrgOdHXLT2zcJQB5s/view?usp=sharing)
-## Features
-- Upload images (PNG, JPG, JPEG) through a user-friendly web interface.
-- Generate Hindi captions automatically using a trained neural network.
-- Supports real-time captioning with a responsive design.
+# 🖼️ Cozy Image Captioning in Hindi (Glassmorphism Edition)
 
-## Prerequisites
-- Python 3.12 or higher
-- Conda (for environment management)
-- Access to the model files hosted on Google Drive
+![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)
+![PyTorch](https://img.shields.io/badge/PyTorch-Deep_Learning-EE4C2C.svg)
+![Flask](https://img.shields.io/badge/Flask-Web_Framework-black.svg)
 
-## Installation
-Follow these steps to set up and run the project locally:
+A seamless, beautiful web application powered by deep learning that generates rich **Hindi captions** and **Audio (Text-to-Speech)** for any uploaded image.
+
+## ✨ Features
+- **Modern Glassmorphism UI**: A stunning, premium frontend with animated fluid gradients, crafted for an elegant user experience.
+- **Interactive Drag & Drop**: Easily drag your images directly onto the upload zone.
+- **AI-Powered Hindi Captioning**: Automatically generates highly accurate Hindi sentences describing the image using an Encoder-Decoder neural network.
+- **Audio Playback**: Automatically speaks the generated Hindi caption out loud using Google Text-to-Speech (gTTS).
+- **Magical Loading States**: Animated UI feedback while the PyTorch model runs inference in the background.
+
+## 📦 Required Model Files
+Before running the app, you MUST download the model and vocabulary binaries and place them in the root directory:
+- 🧠 [image_captioning_model.pth](https://drive.google.com/file/d/1txKnKwwB9beunMP3t1w3dQm85sDrvzoP/view?usp=sharing)
+- 📚 [vocab.pkl](https://drive.google.com/file/d/1XssaSKX-tbnNpIHIrgOdHXLT2zcJQB5s/view?usp=sharing)
+
+## 🛠️ Installation & Setup
+
+Follow these steps to set up the project locally:
 
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/Mansiraj1309/Image_captioning_hindi.git
    cd Image_captioning_hindi
-2. **Run**
--conda create -n image-captioning python=3.12
--conda activate image-captioning
-3. **Run**
--pip install -r requirements.txt
-4. **Download model files mentioned above**
-5. **Run the application using** 
--python app.py
+   ```
+2. **Create a Virtual Environment**:
+   ```bash
+   conda create -n image-captioning python=3.12
+   conda activate image-captioning
+   ```
+3. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Run the Application**:
+   ```bash
+   python app.py
+   ```
 
-## Usage
-Web Interface:
-Access http://127.0.0.1:5001 after running app.py.
-Click “Choose File” to select an image.
-Click “Generate Caption” to view the Hindi caption.
-Supported Formats: PNG, JPG, JPEG.
-Example Output: For an image of a family gathering, the model might output “परिवार एक साथ भोजन कर रहा है” (A family is eating together).
+## 🚀 Usage
+
+1. Open your browser and navigate to **[http://localhost:5005](http://localhost:5005)**.
+2. Drag and drop an image or click "Browse" to select one (Supports PNG, JPG, JPEG).
+3. Click on **"कैप्शन प्राप्त करें" (Get Caption)**.
+4. Wait a few magical seconds for the model to "weave the story".
+5. View your generated Hindi caption alongside the generated audio player!
+
+---
+> *Example Output: For an image of a family gathering, the model might output and speak “परिवार एक साथ भोजन कर रहा है” (A family is eating together).*
