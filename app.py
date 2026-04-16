@@ -4,45 +4,7 @@ from PIL import Image
 import torch
 from torchvision import transforms
 from model_utils import load_model, generate_caption_for_image
-from collections import Counter
-from tokenizers import Tokenizer
-from tokenizers.models import BPE
-from tokenizers.pre_tokenizers import Whitespace
-from tokenizers.trainers import BpeTrainer
-from gtts import gTTS  # Added for text-to-speech
-
-
-
-# TextVocabulary class (unchanged)
-class TextVocabulary:
-    def __init__(self, freq_threshold):
-        self.itos = {0: "<PAD>", 1: "<SOS>", 2: "<EOS>", 3: "<UNK>"}
-        self.stoi = {k: j for j, k in self.itos.items()}
-        self.freq_threshold = freq_threshold
-
-    def __len__(self):
-        return len(self.itos)
-
-    def build_vocabulary(self, sentence_list):
-        frequencies = Counter()
-        idx = 4
-
-        for sentence in sentence_list:
-            for word in sentence.lower().split():
-                frequencies[word] += 1
-
-                if frequencies[word] == self.freq_threshold:
-                    self.stoi[word] = idx
-                    self.itos[idx] = word
-                    idx += 1
-
-    def numericalize(self, text):
-        tokenized_text = text.lower().split()
-
-        return [
-            self.stoi[token] if token in self.stoi else self.stoi["<UNK>"]
-            for token in tokenized_text
-        ]
+from gtts import gTTS
 
 app = Flask(__name__)
 
@@ -55,7 +17,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # Load model and vocabulary
 device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 model_path = 'image_captioning_model.pth'
-vocab_path = 'vocab.pkl'
+
 
 try:
     model, _, vocab, _ = load_model(model_path, device)
@@ -101,6 +63,8 @@ def upload_image():
             audio_filename = f"caption_{os.path.splitext(file.filename)[0]}.mp3"
             audio_filepath = os.path.join(app.config['UPLOAD_FOLDER'], audio_filename)
             tts = gTTS(text=caption_text, lang='hi')  # 'hi' for Hindi
+            if caption is None:
+                return jsonify({'error': 'Could not generate caption for the image'}), 500
             tts.save(audio_filepath)
             # Return URLs for image and audio
             image_url = f'/uploads/{file.filename}'
@@ -115,4 +79,4 @@ def upload_image():
     return jsonify({'error': 'Invalid file type'}), 400
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5005)
+    app.run(debug=True, host='0.0.0.0', port=5005, use_reloader=False)

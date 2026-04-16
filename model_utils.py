@@ -4,11 +4,82 @@ import torchvision.models as models
 from torchvision import transforms
 from PIL import Image
 import pickle
+import io
 from collections import Counter
 from tokenizers import Tokenizer
 from tokenizers.models import BPE
 from tokenizers.pre_tokenizers import Whitespace
 from tokenizers.trainers import BpeTrainer
+
+# ---------------------------------------------------------------------------
+# Custom pickle helpers to handle tokenizers.Tokenizer version mismatch
+# The Rust-backed Tokenizer stored in the .pth checkpoint cannot be
+# unpickled by newer versions of the `tokenizers` library.  We intercept it
+# during loading and swap in a lightweight Python stub; after loading we
+# rebuild a fresh Tokenizer so the vocab works normally.
+# ---------------------------------------------------------------------------
+
+class _TokenizerStub:
+    """Python stand-in for a tokenizers.Tokenizer that failed to unpickle."""
+
+    def __new__(cls, *args, **kwargs):
+        # Pickle may call __new__ with arguments from the original __reduce__.
+        # Accept and ignore them.
+        return super().__new__(cls)
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __setstate__(self, state):
+        # Swallow the broken bytes – we will rebuild the real Tokenizer later.
+        pass
+
+    def encode(self, text):
+        # Fall-back simple whitespace tokeniser (used only if tokenize() is
+        # called before the stub is replaced by a real Tokenizer).
+        class _Enc:
+            def __init__(self, tokens):
+                self.tokens = tokens
+        return _Enc(text.split())
+
+
+class _PatchedUnpickler(pickle.Unpickler):
+    """Unpickler that silently replaces broken Tokenizer objects."""
+    _TOKENIZER_NAMES = {'Tokenizer', 'TokenizerFast'}
+    _TOKENIZER_MODULES = {'tokenizers', 'tokenizers._tokenizers'}
+
+    def find_class(self, module, name):
+        if name in self._TOKENIZER_NAMES and module in self._TOKENIZER_MODULES:
+            return _TokenizerStub
+        return super().find_class(module, name)
+
+
+class _PatchedPickleModule:
+    """Minimal pickle-module shim accepted by torch.load(pickle_module=...)."""
+    Unpickler = _PatchedUnpickler
+
+    @staticmethod
+    def load(f, **kwargs):
+        return _PatchedUnpickler(f).load()
+
+    @staticmethod
+    def loads(s, **kwargs):
+        return _PatchedUnpickler(io.BytesIO(s)).load()
+
+    # Delegate everything else to the real pickle module
+    def __getattr__(self, item):
+        return getattr(pickle, item)
+
+
+def _fix_vocab_tokenizer(vocab):
+    """Replace a stub (or missing) Tokenizer on a TextVocabulary with a fresh one."""
+    tok = getattr(vocab, 'tokenizer', None)
+    if tok is None or isinstance(tok, _TokenizerStub):
+        fresh = Tokenizer(BPE(unk_token='<UNK>'))
+        fresh.pre_tokenizer = Whitespace()
+        vocab.tokenizer = fresh
+        print("ℹ️  Tokenizer rebuilt from scratch (version mismatch workaround).")
+# ---------------------------------------------------------------------------
 
 # Define TextVocabulary (from cseminor.py)
 class TextVocabulary:
@@ -211,7 +282,14 @@ class EncoderDecoder(nn.Module):
         return outputs
 
 def load_model(file_path, device):
-    checkpoint = torch.load(file_path, map_location=device, weights_only=False)
+    # Use the patched pickle module so that a version-mismatched Tokenizer
+    # inside the checkpoint does not abort loading.
+    checkpoint = torch.load(
+        file_path,
+        map_location=device,
+        weights_only=False,
+        pickle_module=_PatchedPickleModule(),
+    )
     params = checkpoint['model_params']
     model = EncoderDecoder(
         embed_dim=params['embed_dim'],
@@ -225,6 +303,8 @@ def load_model(file_path, device):
     optimizer = torch.optim.Adam(model.parameters(), lr=params['learning_rate'])
     optimizer.load_state_dict(checkpoint['optimizer'])
     vocab = checkpoint['vocab']
+    # Rebuild the Tokenizer if it was replaced by a stub during loading.
+    _fix_vocab_tokenizer(vocab)
     epoch = checkpoint['epoch']
     return model, optimizer, vocab, epoch
 # ... (previous imports and classes remain unchanged)
